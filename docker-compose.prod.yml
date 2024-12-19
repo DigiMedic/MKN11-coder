@@ -1,10 +1,30 @@
 version: '3.8'
 
 services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    volumes:
+      - ./backend/data:/app/data:ro
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - NODE_ENV=production
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    networks:
+      - app-network
+
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
     environment:
       - NODE_ENV=production
       - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
@@ -14,38 +34,13 @@ services:
       timeout: 10s
       retries: 3
     ports:
-      - "${PORT:-3000}:3000"
+      - "3000:3000"
     restart: unless-stopped
-    networks:
-      - app-network
-
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    environment:
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - MODEL_NAME=${MODEL_NAME}
-      - MAX_TOKENS=${MAX_TOKENS}
-      - TEMPERATURE=${TEMPERATURE}
-      - NODE_ENV=production
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    volumes:
-      - mkn11_data:/app/data
-    ports:
-      - "${API_PORT:-8000}:8000"
-    restart: unless-stopped
+    depends_on:
+      - backend
     networks:
       - app-network
 
 networks:
   app-network:
     driver: bridge
-
-volumes:
-  mkn11_data:
-    driver: local
