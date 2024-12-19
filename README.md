@@ -67,30 +67,40 @@ Ostatní konfigurace je pevně nastavena v `backend/config.py`.
 
 ### Produkční Nasazení (Coolify)
 
-Projekt je nakonfigurován pro automatické nasazení pomocí Coolify:
+Projekt je nakonfigurován pro automatické nasazení pomocí Coolify s metodou Docker Compose:
 
 1. **Příprava**
    - Naklonujte repozitář
    - Připravte si OpenAI API klíč
+   - Ujistěte se, že máte `docker-compose.prod.yml`
 
 2. **Nasazení na Coolify**
    - Vytvořte nový projekt v Coolify
+   - Zvolte metodu "Docker Compose"
    - Připojte Git repozitář
    - Nastavte environment proměnné:
      ```
+     # OpenAI konfigurace
      OPENAI_API_KEY=váš-api-klíč
      MODEL_NAME=gpt-4-1106-preview
      MAX_TOKENS=2000
      TEMPERATURE=0.3
-     NEXT_PUBLIC_API_URL=https://vaše-api-url
+     
+     # URL konfigurace
+     NEXT_PUBLIC_API_URL=https://api.vase-domena.cz
+     
+     # Porty (volitelné)
+     PORT=3000
+     API_PORT=8000
      ```
    - Spusťte deployment
 
 Coolify automaticky:
-- Sestaví Docker kontejnery
+- Sestaví Docker kontejnery podle `docker-compose.prod.yml`
 - Nastaví SSL certifikáty
 - Nakonfiguruje reverzní proxy
-- Spustí monitoring
+- Spustí monitoring a health checks
+- Vytvoří persistentní volume pro data
 
 ## API Dokumentace
 

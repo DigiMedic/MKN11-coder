@@ -10,15 +10,15 @@ from .openai_client import OpenAIClient
 load_dotenv()
 
 app = FastAPI(
-    title="MKN11 API",
-    description="API pro automatické kódování diagnóz pomocí MKN-11",
-    version="1.0.0"
+    title="MKN-11 Asistované Kódování",
+    description="API pro asistované kódování diagnóz podle standardu MKN-11",
+    version="1.0.0",
 )
 
-# CORS pro vývojové prostředí
+# CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
