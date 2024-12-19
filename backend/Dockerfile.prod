@@ -14,12 +14,13 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Kopírování aplikačních souborů
 COPY ./app ./app
 COPY ./config.py .
+COPY ./data/mkn-11-terminologie-202403.xlsx /app/data/
 
 # Vytvoření neprivilegovaného uživatele
 RUN useradd -m appuser && \
     chown -R appuser:appuser /app
 
-# Vytvoření adresáře pro data
+# Vytvoření adresáře pro data a nastavení oprávnění
 RUN mkdir -p /app/data && \
     chown -R appuser:appuser /app/data
 
