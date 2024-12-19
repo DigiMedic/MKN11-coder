@@ -10,7 +10,7 @@ Vyvíjím systém pro asistované kódování diagnóz podle standardu MKN-11 s 
 - **Backend:** FastAPI (Python)
 - **AI Model:** OpenAI GPT-4
 - **Data:** MKN-11 terminologie
-- **Kontejnerizace:** Docker
+- **Nasazení:** Docker, Coolify
 
 ## Struktura Projektu
 
@@ -28,36 +28,26 @@ mkn11/
 
 ## Požadavky
 
-- Python 3.9+
+- Python 3.11+
 - Node.js 18+
 - Docker a Docker Compose
 - OpenAI API klíč
 
 ## Konfigurace
 
-1. Vytvořte soubor `.env` v kořenovém adresáři:
-   ```env
-   OPENAI_API_KEY=váš-api-klíč
-   MODEL_NAME=gpt-4-1106-preview
-   MAX_TOKENS=2000
-   TEMPERATURE=0.3
-   ```
+Vytvořte soubor `.env` v kořenovém adresáři pouze s konfigurací OpenAI:
+```env
+OPENAI_API_KEY=váš-api-klíč
+MODEL_NAME=gpt-4-1106-preview
+MAX_TOKENS=2000
+TEMPERATURE=0.3
+```
+
+Ostatní konfigurace je pevně nastavena v `backend/config.py`.
 
 ## Instalace a Spuštění
 
-### Pomocí Dockeru (Doporučeno)
-
-1. Sestavte a spusťte kontejnery:
-   ```bash
-   docker-compose up --build
-   ```
-
-2. Aplikace bude dostupná na:
-   - Frontend: http://localhost:3000
-   - Backend API: http://localhost:8000
-   - API Dokumentace: http://localhost:8000/docs
-
-### Manuální Spuštění
+### Lokální Vývoj
 
 1. Backend:
    ```bash
@@ -74,6 +64,33 @@ mkn11/
    npm install
    npm run dev
    ```
+
+### Produkční Nasazení (Coolify)
+
+Projekt je nakonfigurován pro automatické nasazení pomocí Coolify:
+
+1. **Příprava**
+   - Naklonujte repozitář
+   - Připravte si OpenAI API klíč
+
+2. **Nasazení na Coolify**
+   - Vytvořte nový projekt v Coolify
+   - Připojte Git repozitář
+   - Nastavte environment proměnné:
+     ```
+     OPENAI_API_KEY=váš-api-klíč
+     MODEL_NAME=gpt-4-1106-preview
+     MAX_TOKENS=2000
+     TEMPERATURE=0.3
+     NEXT_PUBLIC_API_URL=https://vaše-api-url
+     ```
+   - Spusťte deployment
+
+Coolify automaticky:
+- Sestaví Docker kontejnery
+- Nastaví SSL certifikáty
+- Nakonfiguruje reverzní proxy
+- Spustí monitoring
 
 ## API Dokumentace
 
