@@ -4,38 +4,41 @@ services:
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile
-    volumes:
-      - ./backend/data:/app/data:ro
-      - ./backend/app:/app/app
-      - ./backend/config.py:/app/config.py
-    ports:
-      - "8000:8000"
+      dockerfile: Dockerfile.prod
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - NODE_ENV=production
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    networks:
+      - app-network
 
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-      - /app/.next
-    ports:
-      - "3000:3000"
+      dockerfile: Dockerfile.prod
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:8000
-      - WATCHPACK_POLLING=true
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
     healthcheck:
       test: ["CMD", "wget", "--spider", "http://localhost:3000"]
       interval: 30s
       timeout: 10s
       retries: 3
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
     depends_on:
       - backend
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
