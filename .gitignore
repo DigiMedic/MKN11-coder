@@ -61,3 +61,5 @@ venv/
 
 # Výjimky pro data
 !backend/data/mkn-11-terminologie-202403.xlsx
+
+.windsurfrules

@@ -6,6 +6,7 @@ WORKDIR /app
 # Kopírování package souborů
 COPY package*.json ./
 RUN npm ci
+RUN npm install sharp
 
 # Kopírování zdrojových souborů
 COPY . .
