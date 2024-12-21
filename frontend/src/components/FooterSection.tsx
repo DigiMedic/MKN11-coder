@@ -6,7 +6,7 @@ import {
   FooterBottom,
   FooterContent,
 } from "@/components/ui/footer";
-import StaproLogo from "@/components/logos/stapro-logo";
+import SovadinaLogo from "@/components/logos/sovadina-logo";
 import Link from "next/link";
 import Image from "next/image"
 import { Github, Linkedin } from "lucide-react"
@@ -21,7 +21,7 @@ export default function FooterSection() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="flex flex-col gap-4 sm:gap-6">
             <Link href="/" className="inline-block">
-              <StaproLogo className="h-8 w-auto transition-all hover:opacity-75" />
+              <SovadinaLogo className="h-8 w-auto transition-all hover:opacity-75" />
             </Link>
             <p className="max-w-xl text-muted-foreground">
               <Balancer>

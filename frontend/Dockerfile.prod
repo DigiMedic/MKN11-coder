@@ -25,17 +25,22 @@ WORKDIR /app
 # Nastavení environmentálních proměnných
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV NEXT_PUBLIC_API_URL=http://backend:8000  # URL backendu pro frontend
+# URL backendu pro frontend
+ENV NEXT_PUBLIC_API_URL=http://backend:8000
 
 # Vytvoření neprivilegovaného uživatele
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs && \
     chown -R nextjs:nodejs /app
 
-# Kopírování buildu a potřebných souborů
+# Kopírování pouze produkčních souborů
+COPY --from=builder /app/next.config.js ./
 COPY --from=builder /app/public ./public
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+
+# Nastavení správných oprávnění pro soubory
+RUN chown -R nextjs:nodejs ./public ./public/* ./.next/static
 
 USER nextjs
 
@@ -51,4 +56,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD wget -q --spider http://localhost:3000 || exit 1
 
 # Spuštění aplikace
-CMD ["npm", "run", "start", "--", "--port", "3000"]
+CMD ["node", "server.js"]
