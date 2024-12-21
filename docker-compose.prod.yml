@@ -6,8 +6,11 @@ services:
       context: ./backend
       dockerfile: Dockerfile.prod
     environment:
-      - OPENAI_API_KEY=${OPENAI_API_KEY}  # OpenAI API klíč
-      - NODE_ENV=production  # Produkční režim
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - NODE_ENV=production
+      - MODEL_NAME=${MODEL_NAME:-gpt-4-1106-preview}
+      - MAX_TOKENS=${MAX_TOKENS:-2000}
+      - TEMPERATURE=${TEMPERATURE:-0.3}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
@@ -15,7 +18,7 @@ services:
       retries: 3
     restart: unless-stopped
     ports:
-      - "8000:8000"
+      - "${PORT:-8000}:8000"
     networks:
       - app-network
 
@@ -25,7 +28,7 @@ services:
       dockerfile: Dockerfile.prod
     environment:
       - NODE_ENV=production
-      - NEXT_PUBLIC_API_URL=${COOLIFY_BACKEND_URL}
+      - NEXT_PUBLIC_API_URL=${COOLIFY_BACKEND_URL:-http://localhost:8000}
     healthcheck:
       test: ["CMD", "wget", "--spider", "http://localhost:3000"]
       interval: 30s
@@ -33,7 +36,7 @@ services:
       retries: 3
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "${FRONTEND_PORT:-3000}:3000"
     depends_on:
       - backend
     networks:
