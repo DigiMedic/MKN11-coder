@@ -6,8 +6,38 @@ services:
       context: ./backend
       dockerfile: Dockerfile.prod
     environment:
+      # Povinné proměnné
       - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - NODE_ENV=production
+      
+      # URL konfigurace
+      - BACKEND_URL=${BACKEND_URL}
+      - FRONTEND_URL=${FRONTEND_URL}
+      
+      # Prostředí
+      - NODE_ENV=${NODE_ENV:-production}
+      - DEBUG=${DEBUG:-False}
+      
+      # API konfigurace
+      - API_V1_PREFIX=${API_V1_PREFIX:-/api/v1}
+      - PROJECT_NAME=${PROJECT_NAME:-MKN-11 Asistované Kódování}
+      - VERSION=${VERSION:-1.0.0}
+      
+      # CORS
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+      
+      # Cache a limity
+      - CACHE_TTL=${CACHE_TTL:-3600}
+      - MAX_CACHE_SIZE=${MAX_CACHE_SIZE:-1000}
+      - RATE_LIMIT_PER_MINUTE=${RATE_LIMIT_PER_MINUTE:-60}
+      - MAX_REQUEST_SIZE_MB=${MAX_REQUEST_SIZE_MB:-10}
+      
+      # OpenAI
+      - MODEL_NAME=${MODEL_NAME:-gpt-4-1106-preview}
+      - MAX_TOKENS=${MAX_TOKENS:-2000}
+      - TEMPERATURE=${TEMPERATURE:-0.3}
+      
+      # Data
+      - MKN11_EXCEL_PATH=${MKN11_EXCEL_PATH:-/app/data/mkn-11-terminologie-202403.xlsx}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
@@ -25,7 +55,8 @@ services:
       dockerfile: Dockerfile.prod
     environment:
       - NODE_ENV=production
-      - NEXT_PUBLIC_BACKEND_URL=${NEXT_PUBLIC_BACKEND_URL}
+      # Použijeme BACKEND_URL pro frontend
+      - NEXT_PUBLIC_BACKEND_URL=${BACKEND_URL}
     healthcheck:
       test: ["CMD", "wget", "--spider", "http://localhost:3000"]
       interval: 30s
