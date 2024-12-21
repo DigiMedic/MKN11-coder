@@ -1,98 +1,111 @@
-# Nasazení na Coolify
+# Nasazení MKN-11 Aplikace
 
-## Příprava
+Tento dokument popisuje postup nasazení aplikace MKN-11 Asistované Kódování pomocí Coolify.
 
-1. Naklonujte repozitář
-2. Ujistěte se, že máte:
-   - Soubor `mkn-11-terminologie-202403.xlsx` ve složce `backend/data/`
-   - OpenAI API klíč
+## Předpoklady
 
-## Nasazení v Coolify
+- Přístup k Coolify instanci
+- OpenAI API klíč
+- Doména pro frontend a backend (volitelné)
 
-1. **Vytvoření služeb**:
-   
-   a) **Backend služba**:
-   - Vytvořte novou službu typu "Docker Service"
-   - Zvolte váš Git repozitář
-   - Nastavte build kontext na `/backend`
-   - Nastavte port na `8000`
-   - Přidejte povinnou proměnnou prostředí:
-     ```
-     OPENAI_API_KEY=váš-openai-api-klíč
-     ```
-   - Volitelné proměnné (mají výchozí hodnoty):
-     ```
-     MODEL_NAME=gpt-4-1106-preview
-     MAX_TOKENS=2000
-     TEMPERATURE=0.3
-     DEBUG=False
-     MKN11_EXCEL_PATH=/app/data/mkn-11-terminologie-202403.xlsx
-     ```
+## Kroky Nasazení
 
-   b) **Frontend služba**:
-   - Vytvořte novou službu typu "Docker Service"
-   - Zvolte váš Git repozitář
-   - Nastavte build kontext na `/frontend`
-   - Nastavte port na `3000`
-   - Přidejte povinnou proměnnou prostředí:
-     ```
-     NEXT_PUBLIC_BACKEND_URL=https://api.vase-domena.com
-     ```
+### 1. Příprava Proměnných Prostředí
 
-2. **Nastavení domén**:
-   - Pro backend: `api.vase-domena.com`
-   - Pro frontend: `vase-domena.com`
+Vytvořte následující proměnné prostředí v Coolify:
 
-3. **SSL/HTTPS**:
-   - Coolify automaticky nastaví SSL certifikáty
-   - Zkontrolujte, že DNS záznamy jsou správně nastaveny
+```env
+# OpenAI API klíč (povinný)
+OPENAI_API_KEY=váš-api-klíč
 
-## Vysvětlení proměnných prostředí
+# URL konfigurace
+BACKEND_URL=http://mkn11backend.vaše-doména.com
+FRONTEND_URL=http://mkn11frontend.vaše-doména.com
 
-1. **Povinné proměnné**:
-   - `OPENAI_API_KEY`: Váš OpenAI API klíč
-   - `NEXT_PUBLIC_BACKEND_URL`: URL backendu (např. https://api.vase-domena.com)
+# Prostředí
+NODE_ENV=production
+DEBUG=False
 
-2. **Volitelné proměnné** (mají výchozí hodnoty):
-   - `MODEL_NAME`: OpenAI model (výchozí: gpt-4-1106-preview)
-   - `MAX_TOKENS`: Maximální počet tokenů (výchozí: 2000)
-   - `TEMPERATURE`: Teplota pro generování (výchozí: 0.3)
-   - `DEBUG`: Debug mód (výchozí: False v produkci)
-   - `MKN11_EXCEL_PATH`: Cesta k Excel souboru (výchozí: /app/data/mkn-11-terminologie-202403.xlsx)
+# API konfigurace
+API_V1_PREFIX=/api/v1
+PROJECT_NAME=MKN-11 Asistované Kódování
+VERSION=1.0.0
 
-3. **Automaticky nastavené Coolify**:
-   - Interní směrování mezi službami
-   - SSL certifikáty
-   - Porty a síťování
+# CORS
+ALLOWED_HOSTS=http://mkn11frontend.vaše-doména.com
 
-## Ověření nasazení
+# Cache a limity
+CACHE_TTL=3600
+MAX_CACHE_SIZE=1000
+RATE_LIMIT_PER_MINUTE=60
+MAX_REQUEST_SIZE_MB=10
 
-1. **Backend kontrola**:
-   - Otevřete `https://api.vase-domena.com/health`
-   - Měli byste vidět odpověď o stavu služby
+# OpenAI konfigurace
+MODEL_NAME=gpt-4-1106-preview
+MAX_TOKENS=2000
+TEMPERATURE=0.3
 
-2. **Frontend kontrola**:
-   - Otevřete `https://vase-domena.com`
-   - Aplikace by měla být plně funkční
+# Data
+MKN11_EXCEL_PATH=/app/data/mkn-11-terminologie-202403.xlsx
+```
 
-## Řešení problémů
+### 2. Nasazení Backend Služby
 
-1. **Backend není dostupný**:
-   - Zkontrolujte logy v Coolify
-   - Ověřte `OPENAI_API_KEY`
-   - Zkontrolujte DNS záznam pro `api.vase-domena.com`
+1. V Coolify vytvořte novou službu pro backend
+2. Nastavte build kontext na `/backend`
+3. Použijte `Dockerfile.prod` jako build soubor
+4. Nastavte port na 8000
+5. Přidejte všechny proměnné prostředí
 
-2. **Frontend není dostupný**:
-   - Zkontrolujte logy v Coolify
-   - Ověřte `NEXT_PUBLIC_BACKEND_URL`
-   - Zkontrolujte DNS záznam pro `vase-domena.com`
+### 3. Nasazení Frontend Služby
 
-3. **Problémy s buildem**:
-   - V Coolify rozhraní zkuste "Rebuild"
-   - Zkontrolujte build logy pro chyby
+1. V Coolify vytvořte novou službu pro frontend
+2. Nastavte build kontext na `/frontend`
+3. Použijte `Dockerfile.prod` jako build soubor
+4. Nastavte port na 3000
+5. Přidejte následující proměnné prostředí:
+   ```env
+   NODE_ENV=production
+   NEXT_PUBLIC_BACKEND_URL=http://mkn11backend.vaše-doména.com
+   NEXT_PUBLIC_URL=http://mkn11frontend.vaše-doména.com
+   ```
 
-## Monitoring
+### 4. Nastavení Domén
 
-- Coolify poskytuje monitoring a logy pro obě služby
-- Health check endpointy jsou automaticky kontrolovány
-- Metriky jsou dostupné v Coolify dashboardu
+1. Pro backend službu nastavte doménu: `mkn11backend.vaše-doména.com`
+2. Pro frontend službu nastavte doménu: `mkn11frontend.vaše-doména.com`
+
+### 5. SSL Certifikáty
+
+Coolify automaticky zajistí SSL certifikáty pomocí Let's Encrypt.
+
+### 6. Monitoring
+
+1. Zkontrolujte logy obou služeb
+2. Ověřte, že healthcheck endpointy jsou dostupné:
+   - Backend: `http://mkn11backend.vaše-doména.com/health`
+   - Frontend: `http://mkn11frontend.vaše-doména.com`
+
+## Řešení Problémů
+
+### CORS Chyby
+
+Pokud se vyskytnou CORS chyby:
+1. Ověřte, že `ALLOWED_HOSTS` obsahuje správnou URL frontendu
+2. Zkontrolujte, že `NEXT_PUBLIC_BACKEND_URL` je správně nastaveno ve frontendu
+
+### 404 Chyby na Frontendu
+
+Pokud se vyskytnou 404 chyby:
+1. Ověřte, že `NEXT_PUBLIC_URL` je správně nastaveno
+2. Zkontrolujte, že Next.js aplikace má správně nakonfigurované `basePath` a `assetPrefix`
+
+### Problémy s API Požadavky
+
+1. Ověřte, že `NEXT_PUBLIC_BACKEND_URL` směřuje na správnou URL backendu
+2. Zkontrolujte, že backend je dostupný a běží
+3. Ověřte logy backendu pro případné chyby
+
+## Kontakt
+
+Pro technickou podporu kontaktujte: petr@sovadina.com

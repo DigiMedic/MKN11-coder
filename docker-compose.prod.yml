@@ -54,9 +54,11 @@ services:
       context: ./frontend
       dockerfile: Dockerfile.prod
     environment:
+      # Prostředí
       - NODE_ENV=production
-      # Použijeme BACKEND_URL pro frontend
+      # URL konfigurace
       - NEXT_PUBLIC_BACKEND_URL=${BACKEND_URL}
+      - NEXT_PUBLIC_URL=${FRONTEND_URL}
     healthcheck:
       test: ["CMD", "wget", "--spider", "http://localhost:3000"]
       interval: 30s
