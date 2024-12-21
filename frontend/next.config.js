@@ -5,9 +5,9 @@ const nextConfig = {
     unoptimized: true,
   },
   // Nastavení basePath pro produkci
-  basePath: '',
+  basePath: process.env.NODE_ENV === 'production' ? '' : '',
   // Nastavení assetPrefix pro produkci
-  assetPrefix: process.env.NEXT_PUBLIC_URL || '',
+  assetPrefix: process.env.NODE_ENV === 'production' ? 'http://mkn11frontend.194.164.72.131.sslip.io' : '',
   // Povolení CORS pro API
   async headers() {
     return [
