@@ -1,17 +1,28 @@
+import os
 import pandas as pd
 from typing import Dict, List, Optional
-import os
 import re
 from thefuzz import fuzz
 
 class MKN11Processor:
-    def __init__(self, excel_path: str):
-        self.excel_path = excel_path
+    def __init__(self, excel_path: str = None):
+        """
+        Inicializace procesoru MKN-11 dat.
+        
+        Args:
+            excel_path (str): Cesta k Excel souboru s MKN-11 daty.
+                            Pokud není zadána, použije se hodnota z env proměnné MKN11_EXCEL_PATH.
+        """
+        self.excel_path = excel_path or os.getenv('MKN11_EXCEL_PATH', './data/mkn-11-terminologie-202403.xlsx')
         self.terminology_data = None
-        self._load_data()
+        try:
+            self._load_data()
+        except Exception as e:
+            print(f"Chyba při načítání Excel souboru: {e}")
+            raise
 
     def _load_data(self) -> None:
-        """Načte data z Excel souboru MKN-11."""
+        """Načte data z Excel souboru."""
         try:
             # Načteme Excel soubor
             self.terminology_data = pd.read_excel(
@@ -49,9 +60,13 @@ class MKN11Processor:
             # Vytvoření vyhledávacího indexu pro rychlejší vyhledávání
             self._create_search_index()
             
+        except FileNotFoundError:
+            raise FileNotFoundError(
+                f"MKN-11 Excel soubor nebyl nalezen na cestě: {self.excel_path}. "
+                "Ujistěte se, že soubor existuje a je přístupný."
+            )
         except Exception as e:
-            print(f"Chyba při načítání Excel souboru: {str(e)}")
-            raise
+            raise Exception(f"Chyba při načítání MKN-11 dat: {str(e)}")
 
     def _create_search_index(self) -> None:
         """Vytvoří vyhledávací index pro rychlejší vyhledávání."""

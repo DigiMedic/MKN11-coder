@@ -1,13 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  images: {
-    remotePatterns: [
+  output: 'standalone',
+  async rewrites() {
+    return [
       {
-        protocol: 'https',
-        hostname: 'utfs.io',
-        pathname: '/**',
+        source: '/api/:path*',
+        destination: process.env.NEXT_PUBLIC_API_URL ? `${process.env.NEXT_PUBLIC_API_URL}/api/:path*` : 'http://backend:8000/api/:path*',
       },
-    ],
+    ]
   },
 }
 
