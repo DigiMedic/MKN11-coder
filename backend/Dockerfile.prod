@@ -20,19 +20,15 @@ COPY ./data/mkn-11-terminologie-202403.xlsx /app/data/
 RUN useradd -m appuser && \
     chown -R appuser:appuser /app
 
-# Vytvoření adresáře pro data a nastavení oprávnění
-RUN mkdir -p /app/data && \
-    chown -R appuser:appuser /app/data
-
 USER appuser
 
 # Výchozí hodnoty pro port a host
 ENV PORT=8000
 ENV HOST=0.0.0.0
 
-# Health check s dynamickým portem
+# Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:${PORT}/health || exit 1
 
-# Spuštění aplikace s dynamickými hodnotami
+# Spuštění aplikace
 CMD uvicorn app.main:app --host ${HOST} --port ${PORT}
