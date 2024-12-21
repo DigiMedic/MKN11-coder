@@ -9,36 +9,36 @@ services:
       - OPENAI_API_KEY=${OPENAI_API_KEY}  # OpenAI API klíč
       - NODE_ENV=production  # Produkční režim
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]  # Kontrola dostupnosti backendu
-      interval: 30s  # Interval kontrol
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
       timeout: 10s
       retries: 3
-    restart: unless-stopped  # Restart služby při výpadku
+    restart: unless-stopped
     ports:
-      - "8000:8000"  # Mapování portu backendu
+      - "8000:8000"
     networks:
-      - app-network  # Připojení k síti aplikace
+      - app-network
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile.prod
     environment:
-      - NODE_ENV=production  # Produkční režim
-      - NEXT_PUBLIC_API_URL=${COOLIFY_BACKEND_URL}  # URL backendu pro frontend
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=${COOLIFY_BACKEND_URL}
     healthcheck:
-      test: ["CMD", "wget", "--spider", "http://localhost:3000"]  # Kontrola dostupnosti frontendu
-      interval: 30s  # Interval kontrol
+      test: ["CMD", "wget", "--spider", "http://localhost:3000"]
+      interval: 30s
       timeout: 10s
       retries: 3
-    restart: unless-stopped  # Restart služby při výpadku
+    restart: unless-stopped
     ports:
-      - "3000:3000"  # Mapování portu frontendu
+      - "3000:3000"
     depends_on:
-      - backend  # Závislost na backendu
+      - backend
     networks:
-      - app-network  # Připojení k síti aplikace
+      - app-network
 
 networks:
   app-network:
-    driver: bridge  # Síť typu bridge
+    driver: bridge
